@@ -3,6 +3,7 @@ name = "barfly-simple"
 version = "0.1.0"
 authors = ["John Quigley <jmquigs@gmail.com>"]
 
+
 [dependencies]
 cocoa = "*"
 objc = "*"
@@ -10,3 +11,4 @@ core-graphics = "*"
 objc-foundation = "*"
 objc_id = "*"
 libc = "*"
+barfly = "*"
