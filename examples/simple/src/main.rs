@@ -29,7 +29,6 @@ use cocoa::appkit::{NSApp,
 
 #[macro_use]
 extern crate barfly;
-use barfly;
 
 pub trait NSStatusBar {
 	unsafe fn systemStatusBar(_: Self) -> id {

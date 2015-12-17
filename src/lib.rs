@@ -1,3 +1,4 @@
+#[macro_export]
 macro_rules! decl_objc_callback {
     ($name:ident, $cbs_name:ident) => (
 		// this code is pretty much a rip off of
