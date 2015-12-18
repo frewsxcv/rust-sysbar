@@ -17,14 +17,14 @@ use objc::declare::ClassDecl;
 use objc::runtime::{Class, Object, Sel};
 
 extern crate objc_id;
-use objc_id::Id;
+pub use objc_id::Id;
 
 mod objc_ext;
 
 use objc_ext::NSStatusBar;
 use objc_ext::NSStatusItem;
 
-use objc::Message;
+pub use objc::Message;
 use objc_foundation::{INSObject,NSObject};
 
 extern crate objc_foundation;
@@ -88,7 +88,7 @@ macro_rules! decl_objc_callback {
 		// (and avoid the need for $cbs_name)
 		// but concat_idents! doesn't work in the cases that I want.
 		enum $name {};
-		unsafe impl ::objc::Message for $name { }
+		unsafe impl $crate::Message for $name { }
 
 		// SO.. some explanation is in order here.  We want to allow closure callbacks that
 		// can modify their environment.  But we can't keep them on the $name object because
@@ -103,7 +103,7 @@ macro_rules! decl_objc_callback {
 		}
 
 		impl $name {
-			fn from(cb:Box<Fn() -> ()>) -> ::objc_id::Id<$name> {
+			fn from(cb:Box<Fn() -> ()>) -> $crate::Id<$name> {
 				let cbs = $cbs_name {
 					cb: cb
 				};
@@ -129,7 +129,7 @@ macro_rules! decl_objc_callback {
 		// TODO: Drop for $name doesn't get called, probably because objc manages the memory and
 		// releases it for us.  so we leak the boxed callback right now.
 
-		impl INSObject for $name {
+		impl ::objc_foundation::INSObject for $name {
 			fn class() -> &'static ::objc::runtime::Class {
 				let cname = stringify!($name);
 

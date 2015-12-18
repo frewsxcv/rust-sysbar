@@ -8,9 +8,6 @@ use std::mem;
 extern crate objc_foundation;
 extern crate libc;
 
-extern crate objc_id;
-//use objc_id::Id;
-
 #[macro_use]
 extern crate objc;
 
@@ -18,11 +15,12 @@ extern crate cocoa;
 use cocoa::foundation::{NSString};
 use cocoa::appkit::{NSMenu,NSMenuItem};
 
+use objc_foundation::{INSObject, NSObject};
+
 #[macro_use]
 extern crate barfly;
 use barfly::Barfly;
 
-use objc_foundation::{INSObject, NSObject};
 
 fn main() {
     let mut fly = Barfly::new("Barfly");
