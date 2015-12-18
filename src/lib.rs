@@ -6,12 +6,14 @@ use std::mem;
 extern crate objc;
 
 extern crate cocoa;
-use cocoa::base::{selector, nil, YES /* id, class, BOOL */};
+pub use cocoa::base::{selector, nil, YES /* id, class, BOOL */};
 
-use cocoa::appkit::{NSApp, NSApplication, NSWindow, NSMenu, NSMenuItem, NSRunningApplication,
+pub use cocoa::appkit::{NSApp, NSApplication, NSWindow, NSMenu, NSMenuItem, NSRunningApplication,
                     NSApplicationActivateIgnoringOtherApps};
 
 extern crate libc;
+
+pub use libc::c_void;
 
 use objc::declare::ClassDecl;
 use objc::runtime::{Class, Object, Sel};
@@ -28,7 +30,7 @@ pub use objc::Message;
 pub use objc_foundation::{INSObject,NSObject};
 
 extern crate objc_foundation;
-use cocoa::foundation::{NSAutoreleasePool, NSString};
+pub use cocoa::foundation::{NSAutoreleasePool, NSString};
 
 pub struct Barfly {
     name: String,
@@ -110,7 +112,7 @@ macro_rules! decl_objc_callback {
 				let bcbs = Box::new(cbs);
 
 				let ptr = Box::into_raw(bcbs);
-				let ptr = ptr as *mut ::libc::c_void as u64;
+				let ptr = ptr as *mut $crate::c_void as u64;
 				println!("{}", ptr);
 				let mut oid = <$name as $crate::INSObject>::new();
 				(*oid).setptr(ptr);
@@ -144,7 +146,7 @@ macro_rules! decl_objc_callback {
 						println!("callback, getting the pointer");
 						unsafe {
 							let pval:u64 = *this.get_ivar("_cbptr");
-							let ptr = pval as *mut ::libc::c_void;
+							let ptr = pval as *mut $crate::c_void;
 							let ptr = ptr as *mut $cbs_name;
 							let bcbs:Box<$cbs_name> = Box::from_raw(ptr);
 							{
@@ -175,17 +177,17 @@ macro_rules! add_fly_item {
 			decl_objc_callback!($name, $cbs_name);
 			let cb_obj = $name::from($cbs);
 
-            let astring = ::cocoa::foundation::NSString::alloc(::cocoa::base::nil);
-			let no_key = ::cocoa::foundation::NSString::init_str(astring,""); // TODO want this eventually
+            let astring = $crate::NSString::alloc($crate::nil);
+			let no_key = $crate::NSString::init_str(astring,""); // TODO want this eventually
 
-            let astring = ::cocoa::foundation::NSString::alloc(::cocoa::base::nil);
-			let itemtitle = ::cocoa::foundation::NSString::init_str(astring,$menuItem);
+            let astring = $crate::NSString::alloc($crate::nil);
+			let itemtitle = $crate::NSString::init_str(astring,$menuItem);
 			let action = sel!($name);
-            let aitem = ::cocoa::appkit::NSMenuItem::alloc(::cocoa::base::nil);
-			let item = ::cocoa::appkit::NSMenuItem::initWithTitle_action_keyEquivalent_(aitem, itemtitle, action, no_key);
+            let aitem = $crate::NSMenuItem::alloc($crate::nil);
+			let item = $crate::NSMenuItem::initWithTitle_action_keyEquivalent_(aitem, itemtitle, action, no_key);
 			let _: () = msg_send![item, setTarget:cb_obj];
 
-            ::cocoa::appkit::NSMenu::addItem_($fly.menu, item);
+            $crate::NSMenu::addItem_($fly.menu, item);
 		}
 	)
 }

@@ -4,11 +4,8 @@ use std::collections::HashMap;
 use std::sync::{Arc, RwLock};
 use std::mem;
 
-// TODO need to figure out how to eliminate these, the macros use them
-extern crate libc;
 #[macro_use]
 extern crate objc;
-extern crate cocoa;
 
 #[macro_use]
 extern crate barfly;

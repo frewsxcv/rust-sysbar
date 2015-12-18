@@ -5,8 +5,5 @@ authors = ["John Quigley <jmquigs@gmail.com>"]
 
 
 [dependencies]
-cocoa = "*"
 objc = "*"
-core-graphics = "*"
-libc = "*"
 barfly = "*"
