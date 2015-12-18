@@ -13,7 +13,6 @@ extern crate objc;
 
 extern crate cocoa;
 use cocoa::foundation::{NSString};
-use cocoa::appkit::{NSMenuItem};
 
 use objc_foundation::{INSObject, NSObject};
 
