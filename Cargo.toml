@@ -1,6 +1,6 @@
 [package]
 name = "barfly"
-version = "0.1.2"
+version = "0.1.3"
 authors = ["John Quigley <jmquigs@gmail.com>"]
 description = "WIP. Donut use. Implement osx dock/windows taskbar apps in rust."
 license = "MIT"

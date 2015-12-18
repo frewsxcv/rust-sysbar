@@ -4,33 +4,27 @@ use std::mem;
 
 #[macro_use]
 extern crate objc;
+pub use objc::Message;
 
 extern crate cocoa;
 pub use cocoa::base::{selector, nil, YES /* id, class, BOOL */};
-
 pub use cocoa::appkit::{NSApp, NSApplication, NSWindow, NSMenu, NSMenuItem, NSRunningApplication,
                     NSApplicationActivateIgnoringOtherApps};
 
 extern crate libc;
-
 pub use libc::c_void;
-
-use objc::declare::ClassDecl;
-use objc::runtime::{Class, Object, Sel};
+pub use objc::declare::ClassDecl;
+pub use objc::runtime::{Class, Object, Sel};
 
 extern crate objc_id;
 pub use objc_id::Id;
 
 mod objc_ext;
-
-use objc_ext::NSStatusBar;
-use objc_ext::NSStatusItem;
-
-pub use objc::Message;
-pub use objc_foundation::{INSObject,NSObject};
+use objc_ext::{NSStatusBar,NSStatusItem};
 
 extern crate objc_foundation;
 pub use cocoa::foundation::{NSAutoreleasePool, NSString};
+pub use objc_foundation::{INSObject,NSObject};
 
 pub struct Barfly {
     name: String,
@@ -132,17 +126,17 @@ macro_rules! decl_objc_callback {
 		// releases it for us.  so we leak the boxed callback right now.
 
 		impl $crate::INSObject for $name {
-			fn class() -> &'static ::objc::runtime::Class {
+			fn class() -> &'static $crate::Class {
 				let cname = stringify!($name);
 
-				let mut klass = ::objc::runtime::Class::get(cname);
+				let mut klass = $crate::Class::get(cname);
 				if klass.is_none() {
 					println!("registering class for {}", cname);
 					let superclass = $crate::NSObject::class();
-					let mut decl = ::objc::declare::ClassDecl::new(superclass, &cname).unwrap();
+					let mut decl = $crate::ClassDecl::new(superclass, &cname).unwrap();
 					decl.add_ivar::<u64>("_cbptr");
 
-					extern fn $name(this: &::objc::runtime::Object, _cmd: ::objc::runtime::Sel) {
+					extern fn $name(this: &$crate::Object, _cmd: $crate::Sel) {
 						println!("callback, getting the pointer");
 						unsafe {
 							let pval:u64 = *this.get_ivar("_cbptr");
@@ -158,11 +152,11 @@ macro_rules! decl_objc_callback {
 					}
 
 					unsafe {
-						decl.add_method(sel!($name), $name as extern fn(&::objc::runtime::Object, ::objc::runtime::Sel));
+						decl.add_method(sel!($name), $name as extern fn(&$crate::Object, $crate::Sel));
 					}
 
 					decl.register();
-					klass = ::objc::runtime::Class::get(cname);
+					klass = $crate::Class::get(cname);
 				}
 				klass.unwrap()
 			}
