@@ -25,7 +25,7 @@ use objc_ext::NSStatusBar;
 use objc_ext::NSStatusItem;
 
 pub use objc::Message;
-use objc_foundation::{INSObject,NSObject};
+pub use objc_foundation::{INSObject,NSObject};
 
 extern crate objc_foundation;
 use cocoa::foundation::{NSAutoreleasePool, NSString};
@@ -112,7 +112,7 @@ macro_rules! decl_objc_callback {
 				let ptr = Box::into_raw(bcbs);
 				let ptr = ptr as *mut ::libc::c_void as u64;
 				println!("{}", ptr);
-				let mut oid = <$name as ::objc_foundation::object::INSObject>::new();
+				let mut oid = <$name as $crate::INSObject>::new();
 				(*oid).setptr(ptr);
 				oid
 			}
@@ -129,14 +129,14 @@ macro_rules! decl_objc_callback {
 		// TODO: Drop for $name doesn't get called, probably because objc manages the memory and
 		// releases it for us.  so we leak the boxed callback right now.
 
-		impl ::objc_foundation::INSObject for $name {
+		impl $crate::INSObject for $name {
 			fn class() -> &'static ::objc::runtime::Class {
 				let cname = stringify!($name);
 
 				let mut klass = ::objc::runtime::Class::get(cname);
 				if klass.is_none() {
 					println!("registering class for {}", cname);
-					let superclass = ::objc_foundation::NSObject::class();
+					let superclass = $crate::NSObject::class();
 					let mut decl = ::objc::declare::ClassDecl::new(superclass, &cname).unwrap();
 					decl.add_ivar::<u64>("_cbptr");
 

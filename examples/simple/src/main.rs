@@ -5,7 +5,6 @@ use std::sync::{Arc, RwLock};
 use std::mem;
 
 // TODO need to figure out how to eliminate these, the macros use them
-extern crate objc_foundation;
 extern crate libc;
 #[macro_use]
 extern crate objc;

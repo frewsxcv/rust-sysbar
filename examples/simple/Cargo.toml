@@ -8,6 +8,5 @@ authors = ["John Quigley <jmquigs@gmail.com>"]
 cocoa = "*"
 objc = "*"
 core-graphics = "*"
-objc-foundation = "*"
 libc = "*"
 barfly = "*"
