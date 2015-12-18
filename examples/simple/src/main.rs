@@ -32,12 +32,15 @@ use objc::Message;
 use objc_foundation::{INSObject, NSObject};
 
 fn main() {
+	let mut fly = Barfly::new("Barfly");
+
+	// make a hash map for the callbacks to mess with
 	let hm:HashMap<String,String> = HashMap::new();
 	let hm = Arc::new(RwLock::new(hm));
 
-	let mut fly = Barfly::new("Barfly");
-
 	let phm = hm.clone();
+	// the two names "PreferencesCallback" and "PrefCBS" should be unique for this app and different
+	// from each other.  Doesn't matter what you call them otherwise.
 	add_fly_item!(&fly, "Prefs", PreferencesCallback, PrefCBS, Box::new(move || {
 		let mut hm = phm.write().unwrap();
 		let size = hm.len();
@@ -48,7 +51,7 @@ fn main() {
 	}));
 
 	let fhm = hm.clone();
-	add_fly_item!(&fly, "Summon Herb", HerbCallback, HerbCBS, Box::new(move || {
+	add_fly_item!(&fly, "Summon Herb", Hcb, Hcbs, Box::new(move || {
 		let mut hm = fhm.write().unwrap();
 		let size = hm.len();
 		let k = format!("Herb{}", size);
