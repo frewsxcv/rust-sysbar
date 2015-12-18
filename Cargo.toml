@@ -2,8 +2,14 @@
 name = "barfly"
 version = "0.1.2"
 authors = ["John Quigley <jmquigs@gmail.com>"]
-description = "WIP: implement osx dock/windows taskbar apps in rust"
+description = "WIP. Donut use. Implement osx dock/windows taskbar apps in rust."
 license = "MIT"
 repository = "https://github.com/jmquigs/rs-barfly"
 
 [dependencies]
+cocoa = "*"
+objc = "*"
+core-graphics = "*"
+objc-foundation = "*"
+objc_id = "*"
+libc = "*"

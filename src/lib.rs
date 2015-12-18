@@ -1,3 +1,71 @@
+//use std::ptr;
+#[macro_use]
+extern crate objc;
+
+extern crate cocoa;
+use cocoa::base::{selector, nil,YES,
+    //id, class, BOOL
+};
+use cocoa::foundation::{NSAutoreleasePool, NSString};
+use cocoa::appkit::{NSApp,
+					NSApplication,
+					NSWindow,
+					NSMenu, NSMenuItem, NSRunningApplication,
+					NSApplicationActivateIgnoringOtherApps};
+
+
+mod objc_ext;
+
+use objc_ext::NSStatusBar;
+use objc_ext::NSStatusItem;
+
+pub struct Barfly {
+    name: String,
+    pub menu: *mut objc::runtime::Object,
+    pool: *mut objc::runtime::Object
+}
+
+impl Barfly {
+    pub fn new(name:&str) -> Self {
+        unsafe {
+            Barfly {
+                name: name.to_owned(),
+                pool: NSAutoreleasePool::new(nil), // TODO: not sure about the consequences of creating this here
+                menu: NSMenu::new(nil).autorelease()
+            }
+        }
+    }
+
+    // TODO: allow user callback
+    pub fn add_quit_item(&mut self, label:&str) {
+        unsafe {
+            let no_key = NSString::alloc(nil).init_str("");
+            let pref_item = NSString::alloc(nil).init_str(label);
+            let pref_action = selector("terminate:");
+            let menuitem = NSMenuItem::alloc(nil).initWithTitle_action_keyEquivalent_(pref_item, pref_action, no_key);
+
+            self.menu.addItem_(menuitem);
+        }
+    }
+
+    pub fn display(self) {
+        unsafe {
+            let app = NSApp();
+    		app.activateIgnoringOtherApps_(YES);
+
+    		let item = NSStatusBar::systemStatusBar(nil).statusItemWithLength(-1.0);
+    		item.setHighlightMode_(YES);
+    		let title = NSString::alloc(nil).init_str(&self.name);
+    		item.setTitle_(title);
+            item.setMenu_(self.menu);
+
+            let current_app = NSRunningApplication::currentApplication(nil);
+            current_app.activateWithOptions_(NSApplicationActivateIgnoringOtherApps);
+            app.run();
+        }
+    }
+}
+
 #[macro_export]
 macro_rules! decl_objc_callback {
     ($name:ident, $cbs_name:ident) => (
@@ -86,6 +154,24 @@ macro_rules! decl_objc_callback {
 			}
 		}
 	);
+}
+
+#[macro_export]
+macro_rules! add_fly_item {
+	($fly:expr, $menuItem:expr, $name:ident, $cbs_name:ident, $cbs:expr) => (
+		unsafe {
+			decl_objc_callback!($name, $cbs_name);
+			let cb_obj = $name::from($cbs);
+
+			let no_key = NSString::alloc(nil).init_str(""); // TODO want this eventually
+
+			let itemtitle = NSString::alloc(nil).init_str($menuItem);
+			let action = sel!($name);
+			let item = NSMenuItem::alloc(nil).initWithTitle_action_keyEquivalent_(itemtitle, action, no_key);
+			let _: () = msg_send![item, setTarget:cb_obj];
+			$fly.menu.addItem_(item);
+		}
+	)
 }
 
 
