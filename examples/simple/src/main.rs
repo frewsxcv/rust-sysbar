@@ -48,7 +48,7 @@ fn main() {
 	}));
 
 	let fhm = hm.clone();
-	add_fly_item!(&fly, "Summon Herb", HerbCallback, HerbCBSX, Box::new(move || {
+	add_fly_item!(&fly, "Summon Herb", HerbCallback, HerbCBS, Box::new(move || {
 		let mut hm = fhm.write().unwrap();
 		let size = hm.len();
 		let k = format!("Herb{}", size);

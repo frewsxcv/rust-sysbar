@@ -2,8 +2,7 @@ extern crate core_graphics;
 use self::core_graphics::base::CGFloat;
 
 extern crate cocoa;
-use cocoa::base::{selector, nil,
-    YES, id, class, BOOL
+use cocoa::base::{id, class, BOOL
 };
 
 pub trait NSStatusBar {
