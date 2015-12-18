@@ -1,5 +1,7 @@
 #![allow(non_snake_case)]
 
+use std::mem;
+
 #[macro_use]
 extern crate objc;
 
@@ -9,11 +11,23 @@ use cocoa::foundation::{NSAutoreleasePool, NSString};
 use cocoa::appkit::{NSApp, NSApplication, NSWindow, NSMenu, NSMenuItem, NSRunningApplication,
                     NSApplicationActivateIgnoringOtherApps};
 
+extern crate libc;
+
+use objc::declare::ClassDecl;
+use objc::runtime::{Class, Object, Sel};
+
+extern crate objc_id;
+use objc_id::Id;
 
 mod objc_ext;
 
 use objc_ext::NSStatusBar;
 use objc_ext::NSStatusItem;
+
+use objc::Message;
+pub use objc_foundation::{INSObject,NSObject};
+
+extern crate objc_foundation;
 
 pub struct Barfly {
     name: String,
@@ -115,10 +129,10 @@ macro_rules! decl_objc_callback {
 		// releases it for us.  so we leak the boxed callback right now.
 
 		impl INSObject for $name {
-			fn class() -> &'static Class {
+			fn class() -> &'static ::objc::runtime::Class {
 				let cname = stringify!($name);
 
-				let mut klass = Class::get(cname);
+				let mut klass = ::objc::runtime::Class::get(cname);
 				if klass.is_none() {
 					println!("registering class for {}", cname);
 					let superclass = NSObject::class();
@@ -145,7 +159,7 @@ macro_rules! decl_objc_callback {
 					}
 
 					decl.register();
-					klass = Class::get(cname);
+					klass = ::objc::runtime::Class::get(cname);
 				}
 				klass.unwrap()
 			}
@@ -173,4 +187,8 @@ macro_rules! add_fly_item {
 
 
 #[test]
-fn it_works() {}
+fn it_works() {
+    let bf = Barfly::new("Test");
+    add_fly_item!(&bf, "Test", TestCB, TestCBS, Box::new(||{}));
+
+}
