@@ -7,7 +7,7 @@ extern crate objc;
 
 extern crate cocoa;
 use cocoa::base::{selector, nil, YES /* id, class, BOOL */};
-use cocoa::foundation::{NSAutoreleasePool, NSString};
+
 use cocoa::appkit::{NSApp, NSApplication, NSWindow, NSMenu, NSMenuItem, NSRunningApplication,
                     NSApplicationActivateIgnoringOtherApps};
 
@@ -25,9 +25,10 @@ use objc_ext::NSStatusBar;
 use objc_ext::NSStatusItem;
 
 use objc::Message;
-pub use objc_foundation::{INSObject,NSObject};
+use objc_foundation::{INSObject,NSObject};
 
 extern crate objc_foundation;
+use cocoa::foundation::{NSAutoreleasePool, NSString};
 
 pub struct Barfly {
     name: String,
@@ -40,8 +41,8 @@ impl Barfly {
         unsafe {
             Barfly {
                 name: name.to_owned(),
-                pool: NSAutoreleasePool::new(nil), /* TODO: not sure about the consequences of creating this here */
-                menu: NSMenu::new(nil).autorelease(),
+                pool: NSAutoreleasePool::new(::cocoa::base::nil), /* TODO: not sure about the consequences of creating this here */
+                menu: ::cocoa::appkit::NSMenu::new(::cocoa::base::nil).autorelease(),
             }
         }
     }
@@ -49,10 +50,10 @@ impl Barfly {
     // TODO: allow user callback
     pub fn add_quit_item(&mut self, label: &str) {
         unsafe {
-            let no_key = NSString::alloc(nil).init_str("");
-            let pref_item = NSString::alloc(nil).init_str(label);
+            let no_key = ::cocoa::foundation::NSString::alloc(::cocoa::base::nil).init_str("");
+            let pref_item = ::cocoa::foundation::NSString::alloc(::cocoa::base::nil).init_str(label);
             let pref_action = selector("terminate:");
-            let menuitem = NSMenuItem::alloc(nil)
+            let menuitem = ::cocoa::appkit::NSMenuItem::alloc(::cocoa::base::nil)
                                .initWithTitle_action_keyEquivalent_(pref_item, pref_action, no_key);
 
             self.menu.addItem_(menuitem);
@@ -64,13 +65,13 @@ impl Barfly {
             let app = NSApp();
             app.activateIgnoringOtherApps_(YES);
 
-            let item = NSStatusBar::systemStatusBar(nil).statusItemWithLength(-1.0);
+            let item = NSStatusBar::systemStatusBar(::cocoa::base::nil).statusItemWithLength(-1.0);
             item.setHighlightMode_(YES);
-            let title = NSString::alloc(nil).init_str(&self.name);
+            let title = ::cocoa::foundation::NSString::alloc(::cocoa::base::nil).init_str(&self.name);
             item.setTitle_(title);
             item.setMenu_(self.menu);
 
-            let current_app = NSRunningApplication::currentApplication(nil);
+            let current_app = NSRunningApplication::currentApplication(::cocoa::base::nil);
             current_app.activateWithOptions_(NSApplicationActivateIgnoringOtherApps);
             app.run();
         }
@@ -87,7 +88,7 @@ macro_rules! decl_objc_callback {
 		// (and avoid the need for $cbs_name)
 		// but concat_idents! doesn't work in the cases that I want.
 		enum $name {};
-		unsafe impl Message for $name { }
+		unsafe impl ::objc::Message for $name { }
 
 		// SO.. some explanation is in order here.  We want to allow closure callbacks that
 		// can modify their environment.  But we can't keep them on the $name object because
@@ -102,14 +103,14 @@ macro_rules! decl_objc_callback {
 		}
 
 		impl $name {
-			fn from(cb:Box<Fn() -> ()>) -> Id<$name> {
+			fn from(cb:Box<Fn() -> ()>) -> ::objc_id::Id<$name> {
 				let cbs = $cbs_name {
 					cb: cb
 				};
 				let bcbs = Box::new(cbs);
 
 				let ptr = Box::into_raw(bcbs);
-				let ptr = ptr as *mut libc::c_void as u64;
+				let ptr = ptr as *mut ::libc::c_void as u64;
 				println!("{}", ptr);
 				let mut oid = $name::new();
 				(*oid).setptr(ptr);
@@ -118,7 +119,7 @@ macro_rules! decl_objc_callback {
 
 			fn setptr(&mut self, uptr: u64) {
 		        unsafe {
-		            let obj =  &mut *(self as *mut _ as *mut Object);
+		            let obj =  &mut *(self as *mut _ as *mut ::objc::runtime::Object);
 					println!("setting the ptr: {}", uptr);
 		            obj.set_ivar("_cbptr", uptr);
 		        }
@@ -136,14 +137,14 @@ macro_rules! decl_objc_callback {
 				if klass.is_none() {
 					println!("registering class for {}", cname);
 					let superclass = NSObject::class();
-					let mut decl = ClassDecl::new(superclass, &cname).unwrap();
+					let mut decl = ::objc::declare::ClassDecl::new(superclass, &cname).unwrap();
 					decl.add_ivar::<u64>("_cbptr");
 
-					extern fn $name(this: &Object, _cmd: Sel) {
+					extern fn $name(this: &::objc::runtime::Object, _cmd: ::objc::runtime::Sel) {
 						println!("callback, getting the pointer");
 						unsafe {
 							let pval:u64 = *this.get_ivar("_cbptr");
-							let ptr = pval as *mut libc::c_void;
+							let ptr = pval as *mut ::libc::c_void;
 							let ptr = ptr as *mut $cbs_name;
 							let bcbs:Box<$cbs_name> = Box::from_raw(ptr);
 							{
@@ -155,7 +156,7 @@ macro_rules! decl_objc_callback {
 					}
 
 					unsafe {
-						decl.add_method(sel!($name), $name as extern fn(&Object, Sel));
+						decl.add_method(sel!($name), $name as extern fn(&::objc::runtime::Object, ::objc::runtime::Sel));
 					}
 
 					decl.register();
@@ -174,11 +175,11 @@ macro_rules! add_fly_item {
 			decl_objc_callback!($name, $cbs_name);
 			let cb_obj = $name::from($cbs);
 
-			let no_key = NSString::alloc(nil).init_str(""); // TODO want this eventually
+			let no_key = ::cocoa::foundation::NSString::alloc(::cocoa::base::nil).init_str(""); // TODO want this eventually
 
-			let itemtitle = NSString::alloc(nil).init_str($menuItem);
+			let itemtitle = ::cocoa::foundation::NSString::alloc(::cocoa::base::nil).init_str($menuItem);
 			let action = sel!($name);
-			let item = NSMenuItem::alloc(nil).initWithTitle_action_keyEquivalent_(itemtitle, action, no_key);
+			let item = ::cocoa::appkit::NSMenuItem::alloc(::cocoa::base::nil).initWithTitle_action_keyEquivalent_(itemtitle, action, no_key);
 			let _: () = msg_send![item, setTarget:cb_obj];
 			$fly.menu.addItem_(item);
 		}

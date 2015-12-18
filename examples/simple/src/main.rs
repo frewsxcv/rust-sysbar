@@ -9,23 +9,19 @@ extern crate objc_foundation;
 extern crate libc;
 
 extern crate objc_id;
-use objc_id::Id;
+//use objc_id::Id;
 
 #[macro_use]
 extern crate objc;
-use objc::declare::ClassDecl;
-use objc::runtime::{Object, Sel};
 
 extern crate cocoa;
-use cocoa::base::{nil, class};
-use cocoa::foundation::{NSAutoreleasePool, NSString};
-use cocoa::appkit::{NSMenu, NSMenuItem};
+use cocoa::foundation::{NSString};
+use cocoa::appkit::{NSMenu,NSMenuItem};
 
 #[macro_use]
 extern crate barfly;
 use barfly::Barfly;
 
-use objc::Message;
 use objc_foundation::{INSObject, NSObject};
 
 fn main() {
