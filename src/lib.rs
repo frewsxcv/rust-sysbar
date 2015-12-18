@@ -181,7 +181,8 @@ macro_rules! add_fly_item {
 			let action = sel!($name);
 			let item = ::cocoa::appkit::NSMenuItem::alloc(::cocoa::base::nil).initWithTitle_action_keyEquivalent_(itemtitle, action, no_key);
 			let _: () = msg_send![item, setTarget:cb_obj];
-			$fly.menu.addItem_(item);
+
+            ::cocoa::appkit::NSMenu::addItem_($fly.menu, item);
 		}
 	)
 }
