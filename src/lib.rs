@@ -112,7 +112,7 @@ macro_rules! decl_objc_callback {
 				let ptr = Box::into_raw(bcbs);
 				let ptr = ptr as *mut ::libc::c_void as u64;
 				println!("{}", ptr);
-				let mut oid = $name::new();
+				let mut oid = <$name as ::objc_foundation::object::INSObject>::new();
 				(*oid).setptr(ptr);
 				oid
 			}
@@ -136,7 +136,7 @@ macro_rules! decl_objc_callback {
 				let mut klass = ::objc::runtime::Class::get(cname);
 				if klass.is_none() {
 					println!("registering class for {}", cname);
-					let superclass = NSObject::class();
+					let superclass = ::objc_foundation::NSObject::class();
 					let mut decl = ::objc::declare::ClassDecl::new(superclass, &cname).unwrap();
 					decl.add_ivar::<u64>("_cbptr");
 
@@ -175,9 +175,11 @@ macro_rules! add_fly_item {
 			decl_objc_callback!($name, $cbs_name);
 			let cb_obj = $name::from($cbs);
 
-			let no_key = ::cocoa::foundation::NSString::alloc(::cocoa::base::nil).init_str(""); // TODO want this eventually
+            let astring = ::cocoa::foundation::NSString::alloc(::cocoa::base::nil);
+			let no_key = ::cocoa::foundation::NSString::init_str(astring,""); // TODO want this eventually
 
-			let itemtitle = ::cocoa::foundation::NSString::alloc(::cocoa::base::nil).init_str($menuItem);
+            let astring = ::cocoa::foundation::NSString::alloc(::cocoa::base::nil);
+			let itemtitle = ::cocoa::foundation::NSString::init_str(astring,$menuItem);
 			let action = sel!($name);
             let aitem = ::cocoa::appkit::NSMenuItem::alloc(::cocoa::base::nil);
 			let item = ::cocoa::appkit::NSMenuItem::initWithTitle_action_keyEquivalent_(aitem, itemtitle, action, no_key);

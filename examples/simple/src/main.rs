@@ -7,19 +7,13 @@ use std::mem;
 // TODO need to figure out how to eliminate these, the macros use them
 extern crate objc_foundation;
 extern crate libc;
-
 #[macro_use]
 extern crate objc;
-
 extern crate cocoa;
-use cocoa::foundation::{NSString};
-
-use objc_foundation::{INSObject, NSObject};
 
 #[macro_use]
 extern crate barfly;
 use barfly::Barfly;
-
 
 fn main() {
     let mut fly = Barfly::new("Barfly");
