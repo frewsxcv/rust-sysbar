@@ -9,7 +9,7 @@ pub use objc::Message;
 extern crate cocoa;
 pub use cocoa::base::{selector, nil, YES /* id, class, BOOL */};
 pub use cocoa::appkit::{NSApp, NSApplication, NSWindow, NSMenu, NSMenuItem, NSRunningApplication,
-                    NSApplicationActivateIgnoringOtherApps};
+                        NSApplicationActivateIgnoringOtherApps};
 
 extern crate libc;
 pub use libc::c_void;
@@ -20,11 +20,11 @@ extern crate objc_id;
 pub use objc_id::Id;
 
 mod objc_ext;
-use objc_ext::{NSStatusBar,NSStatusItem};
+use objc_ext::{NSStatusBar, NSStatusItem};
 
 extern crate objc_foundation;
 pub use cocoa::foundation::{NSAutoreleasePool, NSString};
-pub use objc_foundation::{INSObject,NSObject};
+pub use objc_foundation::{INSObject, NSObject};
 
 pub struct Barfly {
     name: String,
@@ -47,7 +47,8 @@ impl Barfly {
     pub fn add_quit_item(&mut self, label: &str) {
         unsafe {
             let no_key = ::cocoa::foundation::NSString::alloc(::cocoa::base::nil).init_str("");
-            let pref_item = ::cocoa::foundation::NSString::alloc(::cocoa::base::nil).init_str(label);
+            let pref_item = ::cocoa::foundation::NSString::alloc(::cocoa::base::nil)
+                                .init_str(label);
             let pref_action = selector("terminate:");
             let menuitem = ::cocoa::appkit::NSMenuItem::alloc(::cocoa::base::nil)
                                .initWithTitle_action_keyEquivalent_(pref_item, pref_action, no_key);
@@ -63,7 +64,8 @@ impl Barfly {
 
             let item = NSStatusBar::systemStatusBar(::cocoa::base::nil).statusItemWithLength(-1.0);
             item.setHighlightMode_(YES);
-            let title = ::cocoa::foundation::NSString::alloc(::cocoa::base::nil).init_str(&self.name);
+            let title = ::cocoa::foundation::NSString::alloc(::cocoa::base::nil)
+                            .init_str(&self.name);
             item.setTitle_(title);
             item.setMenu_(self.menu);
 
@@ -190,6 +192,6 @@ macro_rules! add_fly_item {
 #[test]
 fn it_works() {
     let bf = Barfly::new("Test");
-    add_fly_item!(&bf, "Test", TestCB, TestCBS, Box::new(||{}));
+    add_fly_item!(&bf, "Test", TestCB, TestCBS, Box::new(|| {}));
 
 }
