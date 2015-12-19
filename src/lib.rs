@@ -79,113 +79,113 @@ impl Barfly {
 #[macro_export]
 macro_rules! decl_objc_callback {
     ($name:ident, $cbs_name:ident) => (
-		// this code is pretty much a rip off of
-		// https://github.com/SSheldon/rust-objc-foundation/blob/master/examples/custom_class.rs
+        // this code is pretty much a rip off of
+        // https://github.com/SSheldon/rust-objc-foundation/blob/master/examples/custom_class.rs
 
-		// would be nice to use some mangled ident names here base on $name,
-		// (and avoid the need for $cbs_name)
-		// but concat_idents! doesn't work in the cases that I want.
-		enum $name {};
-		unsafe impl $crate::Message for $name { }
+        // would be nice to use some mangled ident names here base on $name,
+        // (and avoid the need for $cbs_name)
+        // but concat_idents! doesn't work in the cases that I want.
+        enum $name {};
+        unsafe impl $crate::Message for $name { }
 
-		// SO.. some explanation is in order here.  We want to allow closure callbacks that
-		// can modify their environment.  But we can't keep them on the $name object because
-		// that is really just a stateless proxy for the objc object.  So we store them
-		// as numeric pointers values in "ivar" fields on that object.  But, if we store a pointer to the
-		// closure object, we'll run into issues with thin/fat pointer conversions (because
-		// closure objects are trait objects and thus fat pointers).  So we wrap the closure in
-		// another boxed object ($cbs_name), which, since it doesn't use traits, is actually a
-		// regular "thin" pointer, and store THAT pointer in the ivar.  But...so...oy.
-		struct $cbs_name {
-			cb: Box<Fn() -> ()>
-		}
+        // SO.. some explanation is in order here.  We want to allow closure callbacks that
+        // can modify their environment.  But we can't keep them on the $name object because
+        // that is really just a stateless proxy for the objc object.  So we store them
+        // as numeric pointers values in "ivar" fields on that object.  But, if we store a pointer to the
+        // closure object, we'll run into issues with thin/fat pointer conversions (because
+        // closure objects are trait objects and thus fat pointers).  So we wrap the closure in
+        // another boxed object ($cbs_name), which, since it doesn't use traits, is actually a
+        // regular "thin" pointer, and store THAT pointer in the ivar.  But...so...oy.
+        struct $cbs_name {
+            cb: Box<Fn() -> ()>
+        }
 
-		impl $name {
-			fn from(cb:Box<Fn() -> ()>) -> $crate::Id<$name> {
-				let cbs = $cbs_name {
-					cb: cb
-				};
-				let bcbs = Box::new(cbs);
+        impl $name {
+            fn from(cb:Box<Fn() -> ()>) -> $crate::Id<$name> {
+                let cbs = $cbs_name {
+                    cb: cb
+                };
+                let bcbs = Box::new(cbs);
 
-				let ptr = Box::into_raw(bcbs);
-				let ptr = ptr as *mut $crate::c_void as u64;
-				println!("{}", ptr);
-				let mut oid = <$name as $crate::INSObject>::new();
-				(*oid).setptr(ptr);
-				oid
-			}
+                let ptr = Box::into_raw(bcbs);
+                let ptr = ptr as *mut $crate::c_void as u64;
+                println!("{}", ptr);
+                let mut oid = <$name as $crate::INSObject>::new();
+                (*oid).setptr(ptr);
+                oid
+            }
 
-			fn setptr(&mut self, uptr: u64) {
-		        unsafe {
-		            let obj =  &mut *(self as *mut _ as *mut ::objc::runtime::Object);
-					println!("setting the ptr: {}", uptr);
-		            obj.set_ivar("_cbptr", uptr);
-		        }
-		    }
-		}
+            fn setptr(&mut self, uptr: u64) {
+                unsafe {
+                    let obj =  &mut *(self as *mut _ as *mut ::objc::runtime::Object);
+                    println!("setting the ptr: {}", uptr);
+                    obj.set_ivar("_cbptr", uptr);
+                }
+            }
+        }
 
-		// TODO: Drop for $name doesn't get called, probably because objc manages the memory and
-		// releases it for us.  so we leak the boxed callback right now.
+        // TODO: Drop for $name doesn't get called, probably because objc manages the memory and
+        // releases it for us.  so we leak the boxed callback right now.
 
-		impl $crate::INSObject for $name {
-			fn class() -> &'static $crate::Class {
-				let cname = stringify!($name);
+        impl $crate::INSObject for $name {
+            fn class() -> &'static $crate::Class {
+                let cname = stringify!($name);
 
-				let mut klass = $crate::Class::get(cname);
-				if klass.is_none() {
-					println!("registering class for {}", cname);
-					let superclass = $crate::NSObject::class();
-					let mut decl = $crate::ClassDecl::new(superclass, &cname).unwrap();
-					decl.add_ivar::<u64>("_cbptr");
+                let mut klass = $crate::Class::get(cname);
+                if klass.is_none() {
+                    println!("registering class for {}", cname);
+                    let superclass = $crate::NSObject::class();
+                    let mut decl = $crate::ClassDecl::new(superclass, &cname).unwrap();
+                    decl.add_ivar::<u64>("_cbptr");
 
-					extern fn $name(this: &$crate::Object, _cmd: $crate::Sel) {
-						println!("callback, getting the pointer");
-						unsafe {
-							let pval:u64 = *this.get_ivar("_cbptr");
-							let ptr = pval as *mut $crate::c_void;
-							let ptr = ptr as *mut $cbs_name;
-							let bcbs:Box<$cbs_name> = Box::from_raw(ptr);
-							{
-								println!("cb test from cb");
-								(*bcbs.cb)();
-							}
-							mem::forget(bcbs);
-						}
-					}
+                    extern fn $name(this: &$crate::Object, _cmd: $crate::Sel) {
+                        println!("callback, getting the pointer");
+                        unsafe {
+                            let pval:u64 = *this.get_ivar("_cbptr");
+                            let ptr = pval as *mut $crate::c_void;
+                            let ptr = ptr as *mut $cbs_name;
+                            let bcbs:Box<$cbs_name> = Box::from_raw(ptr);
+                            {
+                                println!("cb test from cb");
+                                (*bcbs.cb)();
+                            }
+                            mem::forget(bcbs);
+                        }
+                    }
 
-					unsafe {
-						decl.add_method(sel!($name), $name as extern fn(&$crate::Object, $crate::Sel));
-					}
+                    unsafe {
+                        decl.add_method(sel!($name), $name as extern fn(&$crate::Object, $crate::Sel));
+                    }
 
-					decl.register();
-					klass = $crate::Class::get(cname);
-				}
-				klass.unwrap()
-			}
-		}
-	);
+                    decl.register();
+                    klass = $crate::Class::get(cname);
+                }
+                klass.unwrap()
+            }
+        }
+    );
 }
 
 #[macro_export]
 macro_rules! add_fly_item {
-	($fly:expr, $menuItem:expr, $name:ident, $cbs_name:ident, $cbs:expr) => (
-		unsafe {
-			decl_objc_callback!($name, $cbs_name);
-			let cb_obj = $name::from($cbs);
+    ($fly:expr, $menuItem:expr, $name:ident, $cbs_name:ident, $cbs:expr) => (
+        unsafe {
+            decl_objc_callback!($name, $cbs_name);
+            let cb_obj = $name::from($cbs);
 
             let astring = $crate::NSString::alloc($crate::nil);
-			let no_key = $crate::NSString::init_str(astring,""); // TODO want this eventually
+            let no_key = $crate::NSString::init_str(astring,""); // TODO want this eventually
 
             let astring = $crate::NSString::alloc($crate::nil);
-			let itemtitle = $crate::NSString::init_str(astring,$menuItem);
-			let action = sel!($name);
+            let itemtitle = $crate::NSString::init_str(astring,$menuItem);
+            let action = sel!($name);
             let aitem = $crate::NSMenuItem::alloc($crate::nil);
-			let item = $crate::NSMenuItem::initWithTitle_action_keyEquivalent_(aitem, itemtitle, action, no_key);
-			let _: () = msg_send![item, setTarget:cb_obj];
+            let item = $crate::NSMenuItem::initWithTitle_action_keyEquivalent_(aitem, itemtitle, action, no_key);
+            let _: () = msg_send![item, setTarget:cb_obj];
 
             $crate::NSMenu::addItem_($fly.menu, item);
-		}
-	)
+        }
+    )
 }
 
 
