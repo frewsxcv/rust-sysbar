@@ -5,7 +5,7 @@ use std::sync::{Arc, RwLock};
 use std::mem;
 
 extern crate barfly;
-use barfly::{Barfly, add_fly_item};
+use barfly::Barfly;
 
 fn main() {
     let mut fly = Barfly::new("Barfly");
@@ -15,8 +15,7 @@ fn main() {
     let hm = Arc::new(RwLock::new(hm));
 
     let phm = hm.clone();
-    add_fly_item(&fly,
-                  "Prefs",
+    fly.add_item("Prefs",
                   Box::new(move || {
                       let mut hm = phm.write().unwrap();
                       let size = hm.len();
@@ -27,8 +26,7 @@ fn main() {
                   }));
 
     let fhm = hm.clone();
-    add_fly_item(&fly,
-                  "Summon Herb",
+    fly.add_item("Summon Herb",
                   Box::new(move || {
                       let mut hm = fhm.write().unwrap();
                       let size = hm.len();

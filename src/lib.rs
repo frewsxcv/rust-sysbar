@@ -43,6 +43,27 @@ impl Barfly {
         }
     }
 
+    pub fn add_item(&mut self, menuItem: &str, cbs: Box<Fn() -> ()>) {
+        unsafe {
+            let cb_obj = Callback::from(cbs);
+
+            let astring = NSString::alloc(nil);
+            let no_key = NSString::init_str(astring, ""); // TODO want this eventually
+
+            let astring = NSString::alloc(nil);
+            let itemtitle = NSString::init_str(astring, menuItem);
+            let action = sel!(call);
+            let aitem = NSMenuItem::alloc(nil);
+            let item = NSMenuItem::initWithTitle_action_keyEquivalent_(aitem,
+                                                                       itemtitle,
+                                                                       action,
+                                                                       no_key);
+            let _: () = msg_send![item, setTarget:cb_obj];
+
+            NSMenu::addItem_(self.menu, item);
+        }
+    }
+
     // TODO: allow user callback
     pub fn add_quit_item(&mut self, label: &str) {
         unsafe {
@@ -157,31 +178,11 @@ impl INSObject for Callback {
     }
 }
 
-pub fn add_fly_item(fly: &Barfly, menuItem: &str, cbs: Box<Fn() -> ()>) {
-    unsafe {
-        let cb_obj = Callback::from(cbs);
-
-        let astring = NSString::alloc(nil);
-        let no_key = NSString::init_str(astring, ""); // TODO want this eventually
-
-        let astring = NSString::alloc(nil);
-        let itemtitle = NSString::init_str(astring, menuItem);
-        let action = sel!(call);
-        let aitem = NSMenuItem::alloc(nil);
-        let item = NSMenuItem::initWithTitle_action_keyEquivalent_(aitem,
-                                                                   itemtitle,
-                                                                   action,
-                                                                   no_key);
-        let _: () = msg_send![item, setTarget:cb_obj];
-
-        NSMenu::addItem_(fly.menu, item);
-    }
-}
 
 
 #[test]
 fn it_works() {
-    let bf = Barfly::new("Test");
-    add_fly_item(&bf, "Test", Box::new(|| {}));
+    let mut bf = Barfly::new("Test");
+    bf.add_item("Test", Box::new(|| {}));
 
 }
