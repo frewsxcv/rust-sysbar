@@ -2,7 +2,7 @@ extern crate core_graphics;
 use self::core_graphics::base::CGFloat;
 
 extern crate cocoa;
-use cocoa::base::{id, class, BOOL};
+use self::cocoa::base::{id, class, BOOL};
 
 pub trait NSStatusBar {
     unsafe fn systemStatusBar(_: Self) -> id {

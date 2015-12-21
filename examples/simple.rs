@@ -8,7 +8,7 @@ extern crate barfly;
 use barfly::Barfly;
 
 fn main() {
-    let mut fly = Barfly::new("Barfly");
+    let mut fly = barfly::new("Barfly");
 
     // make a hash map for the callbacks to mess with
     let hm: HashMap<String, String> = HashMap::new();
