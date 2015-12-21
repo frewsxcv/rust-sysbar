@@ -79,9 +79,6 @@ impl Barfly {
 // this code is pretty much a rip off of
 // https://github.com/SSheldon/rust-objc-foundation/blob/master/examples/custom_class.rs
 
-// would be nice to use some mangled ident names here base on $name,
-// (and avoid the need for $cbs_name)
-// but concat_idents! doesn't work in the cases that I want.
 enum Callback {}
 unsafe impl Message for Callback {}
 

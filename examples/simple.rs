@@ -15,8 +15,6 @@ fn main() {
     let hm = Arc::new(RwLock::new(hm));
 
     let phm = hm.clone();
-    // the two names "PreferencesCallback" and "PrefCBS" should be unique for this app and different
-    // from each other.  Doesn't matter what you call them otherwise.
     add_fly_item(&fly,
                   "Prefs",
                   Box::new(move || {
