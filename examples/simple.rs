@@ -4,12 +4,8 @@ use std::collections::HashMap;
 use std::sync::{Arc, RwLock};
 use std::mem;
 
-#[macro_use]
-extern crate objc;
-
-#[macro_use]
 extern crate barfly;
-use barfly::Barfly;
+use barfly::{Barfly, add_fly_item};
 
 fn main() {
     let mut fly = Barfly::new("Barfly");
@@ -21,10 +17,8 @@ fn main() {
     let phm = hm.clone();
     // the two names "PreferencesCallback" and "PrefCBS" should be unique for this app and different
     // from each other.  Doesn't matter what you call them otherwise.
-    add_fly_item!(&fly,
+    add_fly_item(&fly,
                   "Prefs",
-                  PreferencesCallback,
-                  PrefCBS,
                   Box::new(move || {
                       let mut hm = phm.write().unwrap();
                       let size = hm.len();
@@ -35,10 +29,8 @@ fn main() {
                   }));
 
     let fhm = hm.clone();
-    add_fly_item!(&fly,
+    add_fly_item(&fly,
                   "Summon Herb",
-                  Hcb,
-                  Hcbs,
                   Box::new(move || {
                       let mut hm = fhm.write().unwrap();
                       let size = hm.len();
