@@ -1,9 +1,0 @@
-[package]
-name = "barfly-simple"
-version = "0.1.0"
-authors = ["John Quigley <jmquigs@gmail.com>"]
-
-
-[dependencies]
-objc = "*"
-barfly = "*"
