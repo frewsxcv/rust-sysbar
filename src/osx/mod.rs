@@ -150,7 +150,7 @@ impl INSObject for Callback {
         if klass.is_none() {
             println!("registering class for {}", cname);
             let superclass = NSObject::class();
-            let mut decl = ClassDecl::new(superclass, &cname).unwrap();
+            let mut decl = ClassDecl::new(&cname, superclass).unwrap();
             decl.add_ivar::<u64>("_cbptr");
 
             extern "C" fn barfly_callback_call(this: &Object, _cmd: Sel) {
