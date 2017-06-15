@@ -9,9 +9,9 @@ repository = "https://github.com/jmquigs/rs-barfly"
 [dependencies]
 
 [target.x86_64-apple-darwin.dependencies]
-cocoa = "*"
-objc = "*"
-core-graphics = "*"
-objc-foundation = "*"
-objc_id = "*"
-libc = "*"
+cocoa = "0.8"
+objc = "0.2"
+core-graphics = "0.8"
+objc-foundation = "0.3"
+objc_id = "0.1"
+libc = "0.2"
