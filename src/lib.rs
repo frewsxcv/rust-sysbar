@@ -1,5 +1,5 @@
 #[cfg(target_os="macos")]
-pub mod osx;
+mod osx;
 
 #[cfg(target_os="macos")]
 #[macro_use]
