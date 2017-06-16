@@ -10,7 +10,7 @@ extern crate cocoa;
 pub use self::cocoa::base::{selector, nil, YES /* id, class, BOOL */};
 pub use self::cocoa::appkit::{NSApp, NSApplication, NSWindow, NSMenu, NSMenuItem,
                               NSRunningApplication, NSApplicationActivateIgnoringOtherApps,
-                              NSStatusBar};
+                              NSStatusBar, NSStatusItem};
 
 extern crate libc;
 pub use self::libc::c_void;
@@ -19,9 +19,6 @@ pub use self::objc::runtime::{Class, Object, Sel};
 
 extern crate objc_id;
 pub use self::objc_id::Id;
-
-mod objc_ext;
-use self::objc_ext::NSStatusItem;
 
 extern crate objc_foundation;
 pub use self::cocoa::foundation::{NSAutoreleasePool, NSString};
