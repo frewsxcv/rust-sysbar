@@ -9,7 +9,7 @@ pub use objc::Message;
 extern crate cocoa;
 pub use self::cocoa::base::{selector, nil, YES /* id, class, BOOL */};
 pub use self::cocoa::appkit::{NSApp, NSApplication, NSWindow, NSMenu, NSMenuItem, NSRunningApplication,
-                        NSApplicationActivateIgnoringOtherApps};
+                        NSApplicationActivateIgnoringOtherApps, NSStatusBar};
 
 extern crate libc;
 pub use self::libc::c_void;
@@ -20,7 +20,7 @@ extern crate objc_id;
 pub use self::objc_id::Id;
 
 mod objc_ext;
-use self::objc_ext::{NSStatusBar, NSStatusItem};
+use self::objc_ext::{NSStatusItem};
 
 extern crate objc_foundation;
 pub use self::cocoa::foundation::{NSAutoreleasePool, NSString};
@@ -85,7 +85,7 @@ impl Barfly for OsxBarfly {
             let app = NSApp();
             app.activateIgnoringOtherApps_(YES);
 
-            let item = NSStatusBar::systemStatusBar(nil).statusItemWithLength(-1.0);
+            let item = NSStatusBar::systemStatusBar(nil).statusItemWithLength_(-1.0);
             item.setHighlightMode_(YES);
             let title = NSString::alloc(nil)
                             .init_str(&self.name);
