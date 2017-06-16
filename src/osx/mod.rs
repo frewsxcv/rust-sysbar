@@ -88,7 +88,6 @@ impl Barfly for OsxBarfly {
             app.activateIgnoringOtherApps_(YES);
 
             let item = NSStatusBar::systemStatusBar(nil).statusItemWithLength_(-1.0);
-            item.setHighlightMode_(YES);
             let title = NSString::alloc(nil).init_str(&self.name);
             item.setTitle_(title);
             item.setMenu_(self.menu);
