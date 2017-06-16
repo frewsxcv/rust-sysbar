@@ -8,8 +8,9 @@ pub use objc::Message;
 
 extern crate cocoa;
 pub use self::cocoa::base::{selector, nil, YES /* id, class, BOOL */};
-pub use self::cocoa::appkit::{NSApp, NSApplication, NSWindow, NSMenu, NSMenuItem, NSRunningApplication,
-                        NSApplicationActivateIgnoringOtherApps, NSStatusBar};
+pub use self::cocoa::appkit::{NSApp, NSApplication, NSWindow, NSMenu, NSMenuItem,
+                              NSRunningApplication, NSApplicationActivateIgnoringOtherApps,
+                              NSStatusBar};
 
 extern crate libc;
 pub use self::libc::c_void;
@@ -20,7 +21,7 @@ extern crate objc_id;
 pub use self::objc_id::Id;
 
 mod objc_ext;
-use self::objc_ext::{NSStatusItem};
+use self::objc_ext::NSStatusItem;
 
 extern crate objc_foundation;
 pub use self::cocoa::foundation::{NSAutoreleasePool, NSString};
@@ -39,7 +40,8 @@ impl Barfly for OsxBarfly {
         unsafe {
             OsxBarfly {
                 name: name.to_owned(),
-                pool: NSAutoreleasePool::new(nil), /* TODO: not sure about the consequences of creating this here */
+                /* TODO: not sure about the consequences of creating this here */
+                pool: NSAutoreleasePool::new(nil),
                 menu: NSMenu::new(nil).autorelease(),
             }
         }
@@ -56,11 +58,9 @@ impl Barfly for OsxBarfly {
             let itemtitle = NSString::init_str(astring, menuItem);
             let action = sel!(call);
             let aitem = NSMenuItem::alloc(nil);
-            let item = NSMenuItem::initWithTitle_action_keyEquivalent_(aitem,
-                                                                       itemtitle,
-                                                                       action,
-                                                                       no_key);
-            let _: () = msg_send![item, setTarget:cb_obj];
+            let item =
+                NSMenuItem::initWithTitle_action_keyEquivalent_(aitem, itemtitle, action, no_key);
+            let _: () = msg_send![item, setTarget: cb_obj];
 
             NSMenu::addItem_(self.menu, item);
         }
@@ -70,11 +70,13 @@ impl Barfly for OsxBarfly {
     fn add_quit_item(&mut self, label: &str) {
         unsafe {
             let no_key = NSString::alloc(nil).init_str("");
-            let pref_item = NSString::alloc(nil)
-                                .init_str(label);
+            let pref_item = NSString::alloc(nil).init_str(label);
             let pref_action = selector("terminate:");
-            let menuitem = NSMenuItem::alloc(nil)
-                               .initWithTitle_action_keyEquivalent_(pref_item, pref_action, no_key);
+            let menuitem = NSMenuItem::alloc(nil).initWithTitle_action_keyEquivalent_(
+                pref_item,
+                pref_action,
+                no_key,
+            );
 
             self.menu.addItem_(menuitem);
         }
@@ -87,8 +89,7 @@ impl Barfly for OsxBarfly {
 
             let item = NSStatusBar::systemStatusBar(nil).statusItemWithLength_(-1.0);
             item.setHighlightMode_(YES);
-            let title = NSString::alloc(nil)
-                            .init_str(&self.name);
+            let title = NSString::alloc(nil).init_str(&self.name);
             item.setTitle_(title);
             item.setMenu_(self.menu);
 
@@ -169,8 +170,10 @@ impl INSObject for Callback {
             }
 
             unsafe {
-                decl.add_method(sel!(call),
-                                barfly_callback_call as extern "C" fn(&Object, Sel));
+                decl.add_method(
+                    sel!(call),
+                    barfly_callback_call as extern "C" fn(&Object, Sel),
+                );
             }
 
             decl.register();

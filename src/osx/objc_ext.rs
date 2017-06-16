@@ -12,12 +12,12 @@ pub trait NSStatusItem {
 
 impl NSStatusItem for id {
     unsafe fn setHighlightMode_(self, mode: BOOL) {
-        msg_send![self, setHighlightMode:mode]
+        msg_send![self, setHighlightMode: mode]
     }
     unsafe fn statusBar(self) -> id {
         msg_send![self, statusBar]
     }
     unsafe fn setMenu_(self, menu: id) {
-        msg_send![self, setMenu:menu]
+        msg_send![self, setMenu: menu]
     }
 }

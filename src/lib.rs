@@ -1,7 +1,7 @@
-#[cfg(target_os="macos")]
+#[cfg(target_os = "macos")]
 mod osx;
 
-#[cfg(target_os="macos")]
+#[cfg(target_os = "macos")]
 #[macro_use]
 extern crate objc;
 
@@ -15,8 +15,8 @@ pub trait Barfly {
 #[cfg(target_os = "macos")]
 pub type PlatformFly = osx::OsxBarfly;
 
-pub fn new(name:&str) -> PlatformFly {
-  PlatformFly::new(name)
+pub fn new(name: &str) -> PlatformFly {
+    PlatformFly::new(name)
 }
 
 #[test]
