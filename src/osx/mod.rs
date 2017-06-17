@@ -32,6 +32,14 @@ pub struct OsxBarfly {
     pool: *mut objc::runtime::Object,
 }
 
+impl Drop for OsxBarfly {
+    fn drop(&mut self) {
+        unsafe {
+            self.pool.drain()
+        }
+    }
+}
+
 impl Barfly for OsxBarfly {
     fn new(name: &str) -> Self {
         unsafe {
