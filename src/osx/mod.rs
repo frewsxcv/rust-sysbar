@@ -48,11 +48,9 @@ impl Barfly for OsxBarfly {
         unsafe {
             let cb_obj = Callback::from(cbs);
 
-            let astring = NSString::alloc(nil);
-            let no_key = NSString::init_str(astring, ""); // TODO want this eventually
+            let no_key = NSString::alloc(nil).init_str(""); // TODO want this eventually
 
-            let astring = NSString::alloc(nil);
-            let itemtitle = NSString::init_str(astring, menu_item);
+            let itemtitle = NSString::alloc(nil).init_str(menu_item);
             let action = sel!(call);
             let aitem = NSMenuItem::alloc(nil);
             let item =
