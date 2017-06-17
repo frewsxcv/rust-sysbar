@@ -44,7 +44,7 @@ impl Barfly for OsxBarfly {
         }
     }
 
-    fn add_item(&mut self, menuItem: &str, cbs: Box<Fn() -> ()>) {
+    fn add_item(&mut self, menu_item: &str, cbs: Box<Fn() -> ()>) {
         unsafe {
             let cb_obj = Callback::from(cbs);
 
@@ -52,7 +52,7 @@ impl Barfly for OsxBarfly {
             let no_key = NSString::init_str(astring, ""); // TODO want this eventually
 
             let astring = NSString::alloc(nil);
-            let itemtitle = NSString::init_str(astring, menuItem);
+            let itemtitle = NSString::init_str(astring, menu_item);
             let action = sel!(call);
             let aitem = NSMenuItem::alloc(nil);
             let item =

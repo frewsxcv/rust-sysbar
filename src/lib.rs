@@ -7,7 +7,7 @@ extern crate objc;
 
 pub trait Barfly {
     fn new(name: &str) -> Self;
-    fn add_item(&mut self, menuItem: &str, cbs: Box<Fn() -> ()>);
+    fn add_item(&mut self, menu_item: &str, cbs: Box<Fn() -> ()>);
     fn add_quit_item(&mut self, label: &str);
     fn display(&mut self);
 }
