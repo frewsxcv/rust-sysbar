@@ -52,9 +52,11 @@ impl Barfly for OsxBarfly {
 
             let itemtitle = NSString::alloc(nil).init_str(menu_item);
             let action = sel!(call);
-            let aitem = NSMenuItem::alloc(nil);
-            let item =
-                NSMenuItem::initWithTitle_action_keyEquivalent_(aitem, itemtitle, action, no_key);
+            let item = NSMenuItem::alloc(nil).initWithTitle_action_keyEquivalent_(
+                itemtitle,
+                action,
+                no_key,
+            );
             let _: () = msg_send![item, setTarget: cb_obj];
 
             NSMenu::addItem_(self.menu, item);
