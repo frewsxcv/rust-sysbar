@@ -8,8 +8,9 @@ pub use objc::Message;
 
 extern crate cocoa;
 pub use self::cocoa::base::{selector, nil, YES /* id, class, BOOL */};
-pub use self::cocoa::appkit::{NSApp, NSApplication, NSWindow, NSMenu, NSMenuItem, NSRunningApplication,
-                        NSApplicationActivateIgnoringOtherApps};
+pub use self::cocoa::appkit::{NSApp, NSApplication, NSWindow, NSMenu, NSMenuItem,
+                              NSRunningApplication, NSApplicationActivateIgnoringOtherApps,
+                              NSStatusBar, NSStatusItem};
 
 extern crate libc;
 pub use self::libc::c_void;
@@ -18,9 +19,6 @@ pub use self::objc::runtime::{Class, Object, Sel};
 
 extern crate objc_id;
 pub use self::objc_id::Id;
-
-mod objc_ext;
-use self::objc_ext::{NSStatusBar, NSStatusItem};
 
 extern crate objc_foundation;
 pub use self::cocoa::foundation::{NSAutoreleasePool, NSString};
@@ -34,33 +32,40 @@ pub struct OsxBarfly {
     pool: *mut objc::runtime::Object,
 }
 
+impl Drop for OsxBarfly {
+    fn drop(&mut self) {
+        unsafe {
+            self.pool.drain()
+        }
+    }
+}
+
 impl Barfly for OsxBarfly {
     fn new(name: &str) -> Self {
         unsafe {
             OsxBarfly {
                 name: name.to_owned(),
-                pool: NSAutoreleasePool::new(nil), /* TODO: not sure about the consequences of creating this here */
+                /* TODO: not sure about the consequences of creating this here */
+                pool: NSAutoreleasePool::new(nil),
                 menu: NSMenu::new(nil).autorelease(),
             }
         }
     }
 
-    fn add_item(&mut self, menuItem: &str, cbs: Box<Fn() -> ()>) {
+    fn add_item(&mut self, menu_item: &str, cbs: Box<Fn() -> ()>) {
         unsafe {
             let cb_obj = Callback::from(cbs);
 
-            let astring = NSString::alloc(nil);
-            let no_key = NSString::init_str(astring, ""); // TODO want this eventually
+            let no_key = NSString::alloc(nil).init_str(""); // TODO want this eventually
 
-            let astring = NSString::alloc(nil);
-            let itemtitle = NSString::init_str(astring, menuItem);
+            let itemtitle = NSString::alloc(nil).init_str(menu_item);
             let action = sel!(call);
-            let aitem = NSMenuItem::alloc(nil);
-            let item = NSMenuItem::initWithTitle_action_keyEquivalent_(aitem,
-                                                                       itemtitle,
-                                                                       action,
-                                                                       no_key);
-            let _: () = msg_send![item, setTarget:cb_obj];
+            let item = NSMenuItem::alloc(nil).initWithTitle_action_keyEquivalent_(
+                itemtitle,
+                action,
+                no_key,
+            );
+            let _: () = msg_send![item, setTarget: cb_obj];
 
             NSMenu::addItem_(self.menu, item);
         }
@@ -70,11 +75,13 @@ impl Barfly for OsxBarfly {
     fn add_quit_item(&mut self, label: &str) {
         unsafe {
             let no_key = NSString::alloc(nil).init_str("");
-            let pref_item = NSString::alloc(nil)
-                                .init_str(label);
+            let pref_item = NSString::alloc(nil).init_str(label);
             let pref_action = selector("terminate:");
-            let menuitem = NSMenuItem::alloc(nil)
-                               .initWithTitle_action_keyEquivalent_(pref_item, pref_action, no_key);
+            let menuitem = NSMenuItem::alloc(nil).initWithTitle_action_keyEquivalent_(
+                pref_item,
+                pref_action,
+                no_key,
+            );
 
             self.menu.addItem_(menuitem);
         }
@@ -85,10 +92,8 @@ impl Barfly for OsxBarfly {
             let app = NSApp();
             app.activateIgnoringOtherApps_(YES);
 
-            let item = NSStatusBar::systemStatusBar(nil).statusItemWithLength(-1.0);
-            item.setHighlightMode_(YES);
-            let title = NSString::alloc(nil)
-                            .init_str(&self.name);
+            let item = NSStatusBar::systemStatusBar(nil).statusItemWithLength_(-1.0);
+            let title = NSString::alloc(nil).init_str(&self.name);
             item.setTitle_(title);
             item.setMenu_(self.menu);
 
@@ -150,7 +155,7 @@ impl INSObject for Callback {
         if klass.is_none() {
             println!("registering class for {}", cname);
             let superclass = NSObject::class();
-            let mut decl = ClassDecl::new(superclass, &cname).unwrap();
+            let mut decl = ClassDecl::new(&cname, superclass).unwrap();
             decl.add_ivar::<u64>("_cbptr");
 
             extern "C" fn barfly_callback_call(this: &Object, _cmd: Sel) {
@@ -169,8 +174,10 @@ impl INSObject for Callback {
             }
 
             unsafe {
-                decl.add_method(sel!(call),
-                                barfly_callback_call as extern "C" fn(&Object, Sel));
+                decl.add_method(
+                    sel!(call),
+                    barfly_callback_call as extern "C" fn(&Object, Sel),
+                );
             }
 
             decl.register();
