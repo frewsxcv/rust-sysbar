@@ -5,7 +5,27 @@ mod mac_os;
 #[macro_use]
 extern crate objc;
 
-pub trait Barfly {
+pub struct Sysbar(PlatformFly);
+
+impl Sysbar {
+    pub fn new(name: &str) -> Self {
+        Sysbar(PlatformFly::new(name))
+    }
+
+    pub fn add_item(&mut self, menu_item: &str, cbs: Box<Fn() -> ()>) {
+        self.0.add_item(menu_item, cbs)
+    }
+
+    pub fn add_quit_item(&mut self, label: &str) {
+        self.0.add_quit_item(label)
+    }
+
+    pub fn display(&mut self) {
+        self.0.display()
+    }
+}
+
+trait Barfly {
     fn new(name: &str) -> Self;
     fn add_item(&mut self, menu_item: &str, cbs: Box<Fn() -> ()>);
     fn add_quit_item(&mut self, label: &str);
@@ -13,11 +33,7 @@ pub trait Barfly {
 }
 
 #[cfg(target_os = "macos")]
-pub type PlatformFly = mac_os::MacOsBarfly;
-
-pub fn new(name: &str) -> PlatformFly {
-    PlatformFly::new(name)
-}
+type PlatformFly = mac_os::MacOsBarfly;
 
 #[test]
 fn it_works() {

@@ -5,10 +5,10 @@ use std::sync::{Arc, RwLock};
 use std::mem;
 
 extern crate barfly;
-use barfly::Barfly;
+use barfly::Sysbar;
 
 fn main() {
-    let mut fly = barfly::new("Barfly");
+    let mut fly = Sysbar::new("Barfly");
 
     // make a hash map for the callbacks to mess with
     let hm: HashMap<String, String> = HashMap::new();
