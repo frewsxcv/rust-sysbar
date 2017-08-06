@@ -27,9 +27,3 @@ impl Sysbar {
 
 #[cfg(target_os = "macos")]
 type SysbarImpl = mac_os::MacOsSysbar;
-
-#[test]
-fn it_works() {
-    let mut bf = new("Test"); //this is barfly::new()
-    bf.add_item("Test", Box::new(|| {}));
-}
