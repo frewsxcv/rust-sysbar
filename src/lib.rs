@@ -1,5 +1,5 @@
 #[cfg(target_os = "macos")]
-mod osx;
+mod mac_os;
 
 #[cfg(target_os = "macos")]
 #[macro_use]
@@ -13,7 +13,7 @@ pub trait Barfly {
 }
 
 #[cfg(target_os = "macos")]
-pub type PlatformFly = osx::OsxBarfly;
+pub type PlatformFly = mac_os::MacOsBarfly;
 
 pub fn new(name: &str) -> PlatformFly {
     PlatformFly::new(name)

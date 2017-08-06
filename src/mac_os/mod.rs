@@ -26,13 +26,13 @@ pub use self::objc_foundation::{INSObject, NSObject};
 
 use super::Barfly;
 
-pub struct OsxBarfly {
+pub struct MacOsBarfly {
     name: String,
     menu: *mut objc::runtime::Object,
     pool: *mut objc::runtime::Object,
 }
 
-impl Drop for OsxBarfly {
+impl Drop for MacOsBarfly {
     fn drop(&mut self) {
         unsafe {
             self.pool.drain()
@@ -40,11 +40,11 @@ impl Drop for OsxBarfly {
     }
 }
 
-impl Barfly for OsxBarfly {
+impl Barfly for MacOsBarfly {
     fn new(name: &str) -> Self {
         unsafe {
             let pool = NSAutoreleasePool::new(nil);
-            OsxBarfly {
+            MacOsBarfly {
                 name: name.to_owned(),
                 pool: pool,
                 menu: NSMenu::new(nil).autorelease(),
