@@ -7,7 +7,7 @@ extern crate objc;
 pub use objc::Message;
 
 extern crate cocoa;
-pub use self::cocoa::base::{selector, nil, YES /* id, class, BOOL */};
+pub use self::cocoa::base::{nil, YES /* id, class, BOOL */};
 pub use self::cocoa::appkit::{NSApp, NSApplication, NSWindow, NSMenu, NSMenuItem,
                               NSRunningApplication, NSApplicationActivateIgnoringOtherApps,
                               NSStatusBar, NSStatusItem};
@@ -76,7 +76,7 @@ impl Barfly for MacOsBarfly {
         unsafe {
             let no_key = NSString::alloc(nil).init_str("");
             let pref_item = NSString::alloc(nil).init_str(label);
-            let pref_action = selector("terminate:");
+            let pref_action = sel!(terminate:);
             let menuitem = NSMenuItem::alloc(nil).initWithTitle_action_keyEquivalent_(
                 pref_item,
                 pref_action,
