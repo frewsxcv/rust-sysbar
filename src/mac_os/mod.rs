@@ -34,9 +34,7 @@ pub struct MacOsBarfly {
 
 impl Drop for MacOsBarfly {
     fn drop(&mut self) {
-        unsafe {
-            self.pool.drain()
-        }
+        unsafe { self.pool.drain() }
     }
 }
 
