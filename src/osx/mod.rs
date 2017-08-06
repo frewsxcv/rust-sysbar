@@ -43,10 +43,10 @@ impl Drop for OsxBarfly {
 impl Barfly for OsxBarfly {
     fn new(name: &str) -> Self {
         unsafe {
+            let pool = NSAutoreleasePool::new(nil);
             OsxBarfly {
                 name: name.to_owned(),
-                /* TODO: not sure about the consequences of creating this here */
-                pool: NSAutoreleasePool::new(nil),
+                pool: pool,
                 menu: NSMenu::new(nil).autorelease(),
             }
         }
