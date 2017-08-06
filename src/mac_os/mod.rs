@@ -128,14 +128,14 @@ impl Callback {
         let bcbs = Box::new(cbs);
 
         let ptr = Box::into_raw(bcbs);
-        let ptr = ptr as *mut c_void as u64;
+        let ptr = ptr as *mut c_void as usize;
         println!("{}", ptr);
         let mut oid = <Callback as INSObject>::new();
         (*oid).setptr(ptr);
         oid
     }
 
-    fn setptr(&mut self, uptr: u64) {
+    fn setptr(&mut self, uptr: usize) {
         unsafe {
             let obj = &mut *(self as *mut _ as *mut ::objc::runtime::Object);
             println!("setting the ptr: {}", uptr);
@@ -156,12 +156,12 @@ impl INSObject for Callback {
             println!("registering class for {}", cname);
             let superclass = NSObject::class();
             let mut decl = ClassDecl::new(&cname, superclass).unwrap();
-            decl.add_ivar::<u64>("_cbptr");
+            decl.add_ivar::<usize>("_cbptr");
 
             extern "C" fn barfly_callback_call(this: &Object, _cmd: Sel) {
                 println!("callback, getting the pointer");
                 unsafe {
-                    let pval: u64 = *this.get_ivar("_cbptr");
+                    let pval: usize = *this.get_ivar("_cbptr");
                     let ptr = pval as *mut c_void;
                     let ptr = ptr as *mut CallbackState;
                     let bcbs: Box<CallbackState> = Box::from_raw(ptr);
