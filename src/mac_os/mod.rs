@@ -24,8 +24,6 @@ extern crate objc_foundation;
 pub use self::cocoa::foundation::{NSAutoreleasePool, NSString};
 pub use self::objc_foundation::{INSObject, NSObject};
 
-use super::Barfly;
-
 pub struct MacOsBarfly {
     name: String,
     menu: *mut objc::runtime::Object,
@@ -38,8 +36,8 @@ impl Drop for MacOsBarfly {
     }
 }
 
-impl Barfly for MacOsBarfly {
-    fn new(name: &str) -> Self {
+impl MacOsBarfly {
+    pub fn new(name: &str) -> Self {
         unsafe {
             let pool = NSAutoreleasePool::new(nil);
             MacOsBarfly {
@@ -50,7 +48,7 @@ impl Barfly for MacOsBarfly {
         }
     }
 
-    fn add_item(&mut self, label: &str, cbs: Box<Fn() -> ()>) {
+    pub fn add_item(&mut self, label: &str, cbs: Box<Fn() -> ()>) {
         unsafe {
             let cb_obj = Callback::from(cbs);
 
@@ -70,7 +68,7 @@ impl Barfly for MacOsBarfly {
     }
 
     // TODO: allow user callback
-    fn add_quit_item(&mut self, label: &str) {
+    pub fn add_quit_item(&mut self, label: &str) {
         unsafe {
             let no_key = NSString::alloc(nil).init_str("");
             let pref_item = NSString::alloc(nil).init_str(label);
@@ -85,7 +83,7 @@ impl Barfly for MacOsBarfly {
         }
     }
 
-    fn display(&mut self) {
+    pub fn display(&mut self) {
         unsafe {
             let app = NSApp();
             app.activateIgnoringOtherApps_(YES);

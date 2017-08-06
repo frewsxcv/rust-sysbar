@@ -25,13 +25,6 @@ impl Sysbar {
     }
 }
 
-trait Barfly {
-    fn new(name: &str) -> Self;
-    fn add_item(&mut self, label: &str, cbs: Box<Fn() -> ()>);
-    fn add_quit_item(&mut self, label: &str);
-    fn display(&mut self);
-}
-
 #[cfg(target_os = "macos")]
 type PlatformFly = mac_os::MacOsBarfly;
 
