@@ -12,8 +12,8 @@ impl Sysbar {
         Sysbar(PlatformFly::new(name))
     }
 
-    pub fn add_item(&mut self, menu_item: &str, cbs: Box<Fn() -> ()>) {
-        self.0.add_item(menu_item, cbs)
+    pub fn add_item(&mut self, label: &str, cbs: Box<Fn() -> ()>) {
+        self.0.add_item(label, cbs)
     }
 
     pub fn add_quit_item(&mut self, label: &str) {
@@ -27,7 +27,7 @@ impl Sysbar {
 
 trait Barfly {
     fn new(name: &str) -> Self;
-    fn add_item(&mut self, menu_item: &str, cbs: Box<Fn() -> ()>);
+    fn add_item(&mut self, label: &str, cbs: Box<Fn() -> ()>);
     fn add_quit_item(&mut self, label: &str);
     fn display(&mut self);
 }

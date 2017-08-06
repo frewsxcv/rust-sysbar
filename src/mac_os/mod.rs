@@ -50,13 +50,13 @@ impl Barfly for MacOsBarfly {
         }
     }
 
-    fn add_item(&mut self, menu_item: &str, cbs: Box<Fn() -> ()>) {
+    fn add_item(&mut self, label: &str, cbs: Box<Fn() -> ()>) {
         unsafe {
             let cb_obj = Callback::from(cbs);
 
             let no_key = NSString::alloc(nil).init_str(""); // TODO want this eventually
 
-            let itemtitle = NSString::alloc(nil).init_str(menu_item);
+            let itemtitle = NSString::alloc(nil).init_str(label);
             let action = sel!(call);
             let item = NSMenuItem::alloc(nil).initWithTitle_action_keyEquivalent_(
                 itemtitle,
