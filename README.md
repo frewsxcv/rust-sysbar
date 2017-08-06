@@ -2,6 +2,25 @@
 
 Library for interacting with the system's taskbar / tray / statusbar
 
+## Example
+
+```rust
+let mut bar = sysbar::Sysbar::new("Foo");
+
+bar.add_item(
+    "Say 'bar'",
+    Box::new(move || {
+        println!("bar");
+    }),
+);
+
+bar.add_quit_item("Quit");
+
+bar.display();
+```
+
+![Resulting screenshot of code above](http://i.imgur.com/mEI6Mxy.png)
+
 ## License
 
 Licensed under either of
