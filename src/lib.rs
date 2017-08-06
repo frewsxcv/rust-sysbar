@@ -5,11 +5,11 @@ mod mac_os;
 #[macro_use]
 extern crate objc;
 
-pub struct Sysbar(PlatformFly);
+pub struct Sysbar(SysbarImpl);
 
 impl Sysbar {
     pub fn new(name: &str) -> Self {
-        Sysbar(PlatformFly::new(name))
+        Sysbar(SysbarImpl::new(name))
     }
 
     pub fn add_item(&mut self, label: &str, cbs: Box<Fn() -> ()>) {
@@ -26,7 +26,7 @@ impl Sysbar {
 }
 
 #[cfg(target_os = "macos")]
-type PlatformFly = mac_os::MacOsBarfly;
+type SysbarImpl = mac_os::MacOsSysbar;
 
 #[test]
 fn it_works() {

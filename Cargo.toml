@@ -1,10 +1,13 @@
 [package]
-name = "barfly"
-version = "0.1.3"
-authors = ["John Quigley <jmquigs@gmail.com>"]
+name = "sysbar"
+version = "0.1.0"
+authors = [
+    "John Quigley <jmquigs@gmail.com>",
+    "Corey Farwell <coreyf@rwell.org>",
+]
 description = "WIP. Donut use. Implement osx dock/windows taskbar apps in rust."
 license = "MIT/Apache-2.0"
-repository = "https://github.com/jmquigs/rs-barfly"
+repository = "https://github.com/rust-sysbar/rust-sysbar"
 
 [dependencies]
 

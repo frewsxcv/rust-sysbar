@@ -4,18 +4,18 @@ use std::collections::HashMap;
 use std::sync::{Arc, RwLock};
 use std::mem;
 
-extern crate barfly;
-use barfly::Sysbar;
+extern crate sysbar;
+use sysbar::Sysbar;
 
 fn main() {
-    let mut fly = Sysbar::new("Barfly");
+    let mut bar = Sysbar::new("Foo");
 
     // make a hash map for the callbacks to mess with
     let hm: HashMap<String, String> = HashMap::new();
     let hm = Arc::new(RwLock::new(hm));
 
     let phm = hm.clone();
-    fly.add_item(
+    bar.add_item(
         "Prefs",
         Box::new(move || {
             let mut hm = phm.write().unwrap();
@@ -28,7 +28,7 @@ fn main() {
     );
 
     let fhm = hm.clone();
-    fly.add_item(
+    bar.add_item(
         "Summon Herb",
         Box::new(move || {
             let mut hm = fhm.write().unwrap();
@@ -44,7 +44,7 @@ fn main() {
         }),
     );
 
-    fly.add_quit_item("Quit");
+    bar.add_quit_item("Quit");
 
-    fly.display();
+    bar.display();
 }

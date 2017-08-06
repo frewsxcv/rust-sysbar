@@ -24,23 +24,23 @@ extern crate objc_foundation;
 pub use self::cocoa::foundation::{NSAutoreleasePool, NSString};
 pub use self::objc_foundation::{INSObject, NSObject};
 
-pub struct MacOsBarfly {
+pub struct MacOsSysbar {
     name: String,
     menu: *mut objc::runtime::Object,
     pool: *mut objc::runtime::Object,
 }
 
-impl Drop for MacOsBarfly {
+impl Drop for MacOsSysbar {
     fn drop(&mut self) {
         unsafe { self.pool.drain() }
     }
 }
 
-impl MacOsBarfly {
+impl MacOsSysbar {
     pub fn new(name: &str) -> Self {
         unsafe {
             let pool = NSAutoreleasePool::new(nil);
-            MacOsBarfly {
+            MacOsSysbar {
                 name: name.to_owned(),
                 pool: pool,
                 menu: NSMenu::new(nil).autorelease(),
@@ -154,7 +154,7 @@ impl INSObject for Callback {
             let mut decl = ClassDecl::new(&cname, superclass).unwrap();
             decl.add_ivar::<usize>("_cbptr");
 
-            extern "C" fn barfly_callback_call(this: &Object, _cmd: Sel) {
+            extern "C" fn sysbar_callback_call(this: &Object, _cmd: Sel) {
                 println!("callback, getting the pointer");
                 unsafe {
                     let pval: usize = *this.get_ivar("_cbptr");
@@ -172,7 +172,7 @@ impl INSObject for Callback {
             unsafe {
                 decl.add_method(
                     sel!(call),
-                    barfly_callback_call as extern "C" fn(&Object, Sel),
+                    sysbar_callback_call as extern "C" fn(&Object, Sel),
                 );
             }
 
