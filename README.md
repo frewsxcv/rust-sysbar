@@ -1,8 +1,6 @@
 # rust-sysbar
 
-Library for interacting with the system's taskbar / tray / statusbar.
-
-It aims to be cross-platform, but currently only supports macOS. If have some extra time and are interested in implementing this for other platforms, contributions would be greatly appreciated!
+Library for interacting with the system's taskbar / tray / statusbar. It aims to be cross-platform, but currently only supports macOS. If have some extra time and are interested in implementing this for other platforms, contributions would be greatly appreciated! This project is a fork of [rs-barfly](https://github.com/jmquigs/rs-barfly).
 
 [API Documentation](https://docs.rs/crate/sysbar/)
 
