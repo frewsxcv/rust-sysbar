@@ -21,6 +21,10 @@ bar.display();
 
 ![Resulting screenshot of code above](http://i.imgur.com/mEI6Mxy.png)
 
+## See also
+
+* [systray-rs](https://github.com/qdot/systray-rs)
+
 ## License
 
 Licensed under either of
