@@ -7,10 +7,11 @@ extern crate objc;
 pub use objc::Message;
 
 extern crate cocoa;
+pub use self::cocoa::appkit::{
+    NSApp, NSApplication, NSApplicationActivateIgnoringOtherApps, NSMenu, NSMenuItem,
+    NSRunningApplication, NSStatusBar, NSStatusItem, NSWindow,
+};
 pub use self::cocoa::base::{nil, YES /* id, class, BOOL */};
-pub use self::cocoa::appkit::{NSApp, NSApplication, NSWindow, NSMenu, NSMenuItem,
-                              NSRunningApplication, NSApplicationActivateIgnoringOtherApps,
-                              NSStatusBar, NSStatusItem};
 
 extern crate libc;
 pub use self::libc::c_void;
@@ -56,11 +57,8 @@ impl MacOsSysbar {
 
             let itemtitle = NSString::alloc(nil).init_str(label);
             let action = sel!(call);
-            let item = NSMenuItem::alloc(nil).initWithTitle_action_keyEquivalent_(
-                itemtitle,
-                action,
-                no_key,
-            );
+            let item = NSMenuItem::alloc(nil)
+                .initWithTitle_action_keyEquivalent_(itemtitle, action, no_key);
             msg_send![item, setTarget: cb_obj];
 
             NSMenu::addItem_(self.menu, item);
