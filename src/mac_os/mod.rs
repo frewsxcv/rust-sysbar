@@ -42,7 +42,7 @@ impl MacOsSysbar {
             let pool = NSAutoreleasePool::new(nil);
             MacOsSysbar {
                 name: name.to_owned(),
-                pool: pool,
+                pool,
                 menu: NSMenu::new(nil).autorelease(),
             }
         }
@@ -61,7 +61,7 @@ impl MacOsSysbar {
                 action,
                 no_key,
             );
-            let _: () = msg_send![item, setTarget: cb_obj];
+            msg_send![item, setTarget: cb_obj];
 
             NSMenu::addItem_(self.menu, item);
         }
@@ -120,7 +120,7 @@ struct CallbackState {
 
 impl Callback {
     fn from(cb: Box<Fn() -> ()>) -> Id<Self> {
-        let cbs = CallbackState { cb: cb };
+        let cbs = CallbackState { cb };
         let bcbs = Box::new(cbs);
 
         let ptr = Box::into_raw(bcbs);
