@@ -1,6 +1,6 @@
 [package]
 name = "sysbar"
-version = "0.1.0"
+version = "0.2.0"
 authors = [
     "John Quigley <jmquigs@gmail.com>",
     "Corey Farwell <coreyf@rwell.org>",
