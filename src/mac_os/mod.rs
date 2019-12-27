@@ -117,11 +117,11 @@ unsafe impl Message for Callback {}
 // another boxed object ($cbs_name), which, since it doesn't use traits, is actually a
 // regular "thin" pointer, and store THAT pointer in the ivar.  But...so...oy.
 struct CallbackState {
-    cb: Box<Fn() -> ()>,
+    cb: Box<dyn Fn() -> ()>,
 }
 
 impl Callback {
-    fn from(cb: Box<Fn() -> ()>) -> Id<Self> {
+    fn from(cb: Box<dyn Fn() -> ()>) -> Id<Self> {
         let cbs = CallbackState { cb };
         let bcbs = Box::new(cbs);
 
