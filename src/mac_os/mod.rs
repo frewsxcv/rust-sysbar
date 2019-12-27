@@ -48,8 +48,8 @@ impl MacOsSysbar {
             }
         }
     }
-
-    pub fn add_item(&mut self, label: &str, cbs: Box<Fn() -> ()>) {
+    #[allow(clippy::let_unit_value)]
+    pub fn add_item(&mut self, label: &str, cbs: Box<dyn Fn() -> ()>) {
         unsafe {
             let cb_obj = Callback::from(cbs);
 
@@ -59,7 +59,11 @@ impl MacOsSysbar {
             let action = sel!(call);
             let item = NSMenuItem::alloc(nil)
                 .initWithTitle_action_keyEquivalent_(itemtitle, action, no_key);
-            msg_send![item, setTarget: cb_obj];
+            // Type inferance fails here, but we don't really
+            // care about the return values so assigning
+            // to _ with a () type annotation fixes a compile
+            // time error
+            let _: () = msg_send![item, setTarget: cb_obj];
 
             NSMenu::addItem_(self.menu, item);
         }
