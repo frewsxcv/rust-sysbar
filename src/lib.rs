@@ -1,5 +1,7 @@
 #[cfg(target_os = "macos")]
 mod mac_os;
+#[cfg(target_os = "linux")]
+mod linux;
 
 #[cfg(target_os = "macos")]
 #[macro_use]
@@ -27,3 +29,6 @@ impl Sysbar {
 
 #[cfg(target_os = "macos")]
 type SysbarImpl = mac_os::MacOsSysbar;
+
+#[cfg(target_os = "linux")]
+type SysbarImpl = linux::LinuxSysbar;
