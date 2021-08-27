@@ -14,7 +14,7 @@ impl Sysbar {
         Sysbar(SysbarImpl::new(name))
     }
 
-    pub fn add_item(&mut self, label: &str, cbs: Box<dyn Fn() -> ()>) {
+    pub fn add_item(&mut self, label: &str, cbs: Box<dyn Fn()>) {
         self.0.add_item(label, cbs)
     }
 
