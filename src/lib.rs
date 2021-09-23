@@ -1,3 +1,5 @@
+#[cfg(target_os = "linux")]
+mod linux;
 #[cfg(target_os = "macos")]
 mod mac_os;
 
@@ -12,7 +14,7 @@ impl Sysbar {
         Sysbar(SysbarImpl::new(name))
     }
 
-    pub fn add_item(&mut self, label: &str, cbs: Box<dyn Fn() -> ()>) {
+    pub fn add_item(&mut self, label: &str, cbs: Box<dyn Fn()>) {
         self.0.add_item(label, cbs)
     }
 
@@ -27,3 +29,6 @@ impl Sysbar {
 
 #[cfg(target_os = "macos")]
 type SysbarImpl = mac_os::MacOsSysbar;
+
+#[cfg(target_os = "linux")]
+type SysbarImpl = linux::LinuxSysbar;
