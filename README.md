@@ -1,3 +1,5 @@
+**⚠️ This repository has moved to <https://tangled.org/rwell.org/rust-sysbar> ⚠️**
+
 # rust-sysbar
 
 Library for interacting with the system's taskbar / tray / statusbar. It aims to be cross-platform, but currently only supports macOS. If have some extra time and are interested in implementing this for other platforms, contributions would be greatly appreciated! This project is a fork of [rs-barfly](https://github.com/jmquigs/rs-barfly).
